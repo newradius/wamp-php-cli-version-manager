@@ -1,4 +1,6 @@
-﻿$oldPath = $Env:path;
+﻿#Requires -RunAsAdministrator
+
+$oldPath = (Get-ItemProperty -Path ‘Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment’ -Name PATH).path;
 $paths = $oldPath.split(';');
 
 $phpFolderPath = "C:\wamp\bin\php\";
@@ -18,5 +20,7 @@ foreach ($phpVersion in $phpVersions) {
 }
 
 $newVersion = Read-Host -Prompt "Choose a PHP-CLI version [0-$($phpVersions.Length - 1)]";
-$Env:path = $oldPath.Replace($actualVersion, $phpFolderPath + $phpVersions[$newVersion]);
+$newPath = $oldPath.Replace($actualVersion, $phpFolderPath + $phpVersions[$newVersion]);
+Set-ItemProperty -Path ‘Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment’ -Name PATH -Value $newPath
+
 Write-Host "PHP-CLI version changed successfully";
